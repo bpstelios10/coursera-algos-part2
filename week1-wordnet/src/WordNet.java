@@ -59,7 +59,7 @@ public class WordNet {
         // run from command line
         WordNet wordNet = new WordNet(args[0], args[1]);
 //        assertThat(wordNet.distance("hunchback", "accessory_fruit") == 11);
-//
+
         for (String word : wordNet.nouns()) StdOut.println(word);
 
         assertThat(wordNet.isNoun("a"));

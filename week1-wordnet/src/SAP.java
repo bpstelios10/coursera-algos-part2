@@ -84,70 +84,67 @@ public class SAP {
     private CommonAnchestor getCommonAnchestor(Iterable<Integer> vGroup, Iterable<Integer> wGroup) {
         CommonAnchestor commonAnchestor = new CommonAnchestor(-1, Integer.MAX_VALUE);
 
-        Queue<Integer> q = new Queue<>();
-        Set<Integer> vSet = new HashSet<>();
-        boolean[] markedFirstNoun = new boolean[graph.V()];
-        int[] distToFromFirstNoun = new int[graph.V()];
-
-        for (Integer v : vGroup) {
-            if (v == null)
-                throw new IllegalArgumentException("argument of iterable cant be null");
-            validateVertex(v);
-
-            vSet.add(v);
-            markedFirstNoun[v] = true;
-            distToFromFirstNoun[v] = 0;
-            q.enqueue(v);
-        }
-
-        while (!q.isEmpty()) {
-            int i = q.dequeue();
-            for (int j : graph.adj(i)) {
-                if (!markedFirstNoun[j]) {
-                    distToFromFirstNoun[j] = distToFromFirstNoun[i] + 1;
-                    markedFirstNoun[j] = true;
-                    q.enqueue(j);
-                }
-            }
-        }
-
-        Set<Integer> wSet = new HashSet<>();
-        boolean[] markedSecondNoun = new boolean[graph.V()];
-        int[] distToFromSecondNoun = new int[graph.V()];
-
-        for (Integer w : wGroup) {
-            if (w == null)
-                throw new IllegalArgumentException("argument of iterable cant be null");
-            validateVertex(w);
-
-            wSet.add(w);
-            markedSecondNoun[w] = true;
-            distToFromSecondNoun[w] = 0;
-            q.enqueue(w);
-        }
-
-        while (!q.isEmpty()) {
-            int i = q.dequeue();
-            for (int j : graph.adj(i)) {
-                if (!markedSecondNoun[j]) {
-                    distToFromSecondNoun[j] = distToFromSecondNoun[i] + 1;
-                    markedSecondNoun[j] = true;
-                    q.enqueue(j);
-                }
-            }
-        }
+        CustomBFS bfsFromNoun1 = new CustomBFS(graph, vGroup);
+        CustomBFS bfsFromNoun2 = new CustomBFS(graph, wGroup);
 
         for (int i = 0; i < graph.V(); i++) {
-//            StdOut.println("for i: " + i + ", dist from first is: " + distToFromFirstNoun[i] + " and dist from second is: " + distToFromSecondNoun[i]);
-            if ((!vSet.contains(i) && distToFromFirstNoun[i] == 0) || (!wSet.contains(i) && distToFromSecondNoun[i] == 0))
+            if ((!bfsFromNoun1.isVertexVisited(i) && bfsFromNoun1.getDistToFrom(i) == 0)
+                    || (!bfsFromNoun2.isVertexVisited(i) && bfsFromNoun2.getDistToFrom(i) == 0))
                 continue;
 
-            int currentDistance = distToFromFirstNoun[i] + distToFromSecondNoun[i];
+            int currentDistance = bfsFromNoun1.getDistToFrom(i) + bfsFromNoun2.getDistToFrom(i);
             if (currentDistance < commonAnchestor.getDistance())
                 commonAnchestor = new CommonAnchestor(i, currentDistance);
         }
 
         return commonAnchestor.getVertex() == -1 ? new CommonAnchestor(-1, -1) : commonAnchestor;
+    }
+
+    private static class CustomBFS {
+        private final Set<Integer> visitedVertexes;
+        private final int[] distToFrom;
+
+        CustomBFS(Digraph graph, Iterable<Integer> nounsGroup) {
+            Queue<Integer> q = new Queue<>();
+            visitedVertexes = new HashSet<>();
+            boolean[] markedFirstNoun = new boolean[graph.V()];
+            distToFrom = new int[graph.V()];
+
+            for (Integer v : nounsGroup) {
+                if (v == null)
+                    throw new IllegalArgumentException("argument of iterable cant be null");
+                validateVertex(graph, v);
+
+                visitedVertexes.add(v);
+                markedFirstNoun[v] = true;
+                distToFrom[v] = 0;
+                q.enqueue(v);
+            }
+
+            while (!q.isEmpty()) {
+                int i = q.dequeue();
+                for (int j : graph.adj(i)) {
+                    if (!markedFirstNoun[j]) {
+                        distToFrom[j] = distToFrom[i] + 1;
+                        markedFirstNoun[j] = true;
+                        q.enqueue(j);
+                    }
+                }
+            }
+        }
+
+        boolean isVertexVisited(int i) {
+            return visitedVertexes.contains(i);
+        }
+
+        int getDistToFrom(int i) {
+            return distToFrom[i];
+        }
+
+        private void validateVertex(Digraph graph, int v) {
+            if (v < 0 || v >= graph.V())
+                throw new IllegalArgumentException("vertex " + v + " is not between 0 and " + (graph.V() - 1));
+        }
     }
 
     private static class CommonAnchestor {
