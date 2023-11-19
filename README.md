@@ -11,3 +11,15 @@ and from intellij run (make sure that working directory is coursera-algos-part2)
 WordNet::main with program arguments "week1-wordnet/synsets3.txt week1-wordnet/hypernyms3.txt"
 Outcast::main with program arguments "week1-wordnet/synsets.txt week1-wordnet/hypernyms.txt week1-wordnet/outcast5.txt week1-wordnet/outcast8.txt week1-wordnet/outcast11.txt"
 SAP::main with program arguments "week1-wordnet/digraph1.txt"
+
+## Week 2 - Seam Carver
+To run tests of week2 assignment, from commandline, you need to go to week2-seam/build folder and run:
+```shell
+java -classpath :../../.lift/algs4.jar SeamCarver ../10x12.png
+java -classpath :../../.lift/algs4.jar SeamCarverTest ../6x5.png
+java -classpath :../../.lift/algs4.jar AcyclicWeightedVertexShortestPath
+```
+and from intellij run (make sure that working directory is coursera-algos-part2):
+SeamCarver::main with program arguments "week2-seam/10x12.png"
+SeamCarverTest::main with program arguments "week2-seam/6x5.png"
+AcyclicWeightedVertexShortestPath::main
