@@ -23,3 +23,11 @@ and from intellij run (make sure that working directory is coursera-algos-part2)
 SeamCarver::main with program arguments "week2-seam/10x12.png"
 SeamCarverTest::main with program arguments "week2-seam/6x5.png"
 AcyclicWeightedVertexShortestPath::main
+
+## Week 3 - Baseball
+To run tests of week3 assignment, from commandline, you need to go to week3-baseball/build folder and run:
+```shell
+java -classpath :../../.lift/algs4.jar BaseballElimination ../teams8.txt
+```
+and from intellij run (make sure that working directory is coursera-algos-part2):
+BaseballElimination::main with program arguments "week2-seam/teams8.txt"
