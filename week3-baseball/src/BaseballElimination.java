@@ -17,6 +17,7 @@ public class BaseballElimination {
     private final int[] losses;
     private final int[] remainingMatches;
     private final int[][] matchesAgainst;
+    private final Map<String, FlowNetworkWithFordFulkerson> cache = new HashMap<>();
 
     // create a baseball division from given filename in format specified below
     public BaseballElimination(String filename) {
@@ -71,15 +72,16 @@ public class BaseballElimination {
     }
 
     // is given team eliminated?
-    // TODO cache
     public boolean isEliminated(String team) {
         validate(team);
 
         for (int i = 0; i < numberOfTeams(); i++)
             if (wins[i] > wins(team) + remaining(team)) return true;
 
-        FlowNetwork flowNetwork = getFlowNetwork(team);
-        new FordFulkerson(flowNetwork, 0, flowNetwork.V() - 1);
+        if (!cache.containsKey(team))
+            cache.put(team, new FlowNetworkWithFordFulkerson(createFlowNetwork(team)));
+
+        FlowNetwork flowNetwork = cache.get(team).getFlowNetwork();
 
         for (FlowEdge e : flowNetwork.adj(0)) {
             if (e.capacity() > e.flow())
@@ -90,16 +92,18 @@ public class BaseballElimination {
     }
 
     // subset R of teams that eliminates given team; null if not eliminated
-    // TODO cache
     public Iterable<String> certificateOfElimination(String team) {
         validate(team);
 
         for (int i = 0; i < numberOfTeams(); i++)
             if (wins[i] > wins(team) + remaining(team)) return Set.of(teamNames[i]);
 
+        if (!cache.containsKey(team))
+            cache.put(team, new FlowNetworkWithFordFulkerson(createFlowNetwork(team)));
+
+        FlowNetwork flowNetwork = cache.get(team).getFlowNetwork();
+        FordFulkerson ff = cache.get(team).getFordFulkerson();
         Set<String> teamsToEliminate = new HashSet<>();
-        FlowNetwork flowNetwork = getFlowNetwork(team);
-        FordFulkerson ff = new FordFulkerson(flowNetwork, 0, flowNetwork.V() - 1);
 
         for (int i = 0; i < numberOfTeams(); i++) {
             if (ff.inCut(flowNetwork.V() - 1 - i - 1))
@@ -143,7 +147,7 @@ public class BaseballElimination {
         }
     }
 
-    private FlowNetwork getFlowNetwork(String team) {
+    private FlowNetwork createFlowNetwork(String team) {
         int n = numberOfTeams() - 1;
         int numberOfVertexes = 1 + (n * n - n) / 2 + numberOfTeams() + 1;
         FlowNetwork flowNetwork = new FlowNetwork(numberOfVertexes);
@@ -164,5 +168,23 @@ public class BaseballElimination {
         }
 
         return flowNetwork;
+    }
+
+    private static class FlowNetworkWithFordFulkerson {
+        private final FlowNetwork flowNetwork;
+        private final FordFulkerson fordFulkerson;
+
+        FlowNetworkWithFordFulkerson(FlowNetwork flowNetwork) {
+            this.flowNetwork = flowNetwork;
+            fordFulkerson = new FordFulkerson(flowNetwork, 0, flowNetwork.V() - 1);
+        }
+
+        public FlowNetwork getFlowNetwork() {
+            return flowNetwork;
+        }
+
+        public FordFulkerson getFordFulkerson() {
+            return fordFulkerson;
+        }
     }
 }

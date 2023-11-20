@@ -27,7 +27,9 @@ AcyclicWeightedVertexShortestPath::main
 ## Week 3 - Baseball
 To run tests of week3 assignment, from commandline, you need to go to week3-baseball/build folder and run:
 ```shell
-java -classpath :../../.lift/algs4.jar BaseballElimination ../teams8.txt
+java -classpath :../../.lift/algs4.jar BaseballElimination ../teams4a.txt
+java -classpath :../../.lift/algs4.jar BaseballEliminationTest ../teams5b.txt
 ```
 and from intellij run (make sure that working directory is coursera-algos-part2):
-BaseballElimination::main with program arguments "week2-seam/teams8.txt"
+BaseballElimination::main with program arguments "week3-baseball/teams4a.txt"
+BaseballEliminationTest::main with program arguments "week3-baseball/teams5b.txt"
