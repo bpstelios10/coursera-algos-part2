@@ -33,3 +33,13 @@ java -classpath :../../.lift/algs4.jar BaseballEliminationTest ../teams5b.txt
 and from intellij run (make sure that working directory is coursera-algos-part2):
 BaseballElimination::main with program arguments "week3-baseball/teams4a.txt"
 BaseballEliminationTest::main with program arguments "week3-baseball/teams5b.txt"
+
+## Week 4 - Boggle
+To run tests of week4 assignment, from commandline, you need to go to week4-boggle/build folder and run:
+```shell
+java -classpath :../../.lift/algs4.jar BoggleSolverTest ..
+java -classpath :../../.lift/algs4.jar BoggleSolverManualTest ..
+```
+and from intellij run (make sure that working directory is coursera-algos-part2):
+BoggleSolverTest::main with program arguments "week4-boggle"
+BoggleSolverManualTest::main with program arguments "week4-boggle"

@@ -9,21 +9,25 @@ class BoggleSolverTest {
     private static final BoggleSolverTest tester = new BoggleSolverTest();
 
     public static void main(String[] args) {
+        String algs4Dictionary = args[0] + "/dictionary-algs4.txt";
+        String board4x4 = args[0] + "/board4x4.txt";
+        String boardWithQ = args[0] + "/board-q.txt";
+
         tester.testConstructor();
-        tester.testValidWords(args[0], args[1]);
-        tester.testValidWordsWithQ(args[0], args[2]);
+        tester.testValidWords(algs4Dictionary, board4x4);
+        tester.testValidWordsWithQ(algs4Dictionary, boardWithQ);
         tester.testScoreOf();
     }
 
     private void testConstructor() {
-        List<String> dictionary1 = List.of("word1", "word2", "test", "emptyword");
+        List<String> dictionary1 = List.of("WORDONE", "WORDTWO", "TEST", "EMPTYWORD");
         new BoggleSolver(dictionary1.toArray(new String[4]));
 //        BoggleSolver solver1 = new BoggleSolver(dictionary1.toArray(new String[4]));
-//        assertThat(solver1.dictionary.contains("word1"));
-//        assertThat(solver1.dictionary.contains("word2"));
-//        assertThat(solver1.dictionary.contains("test"));
-//        assertThat(solver1.dictionary.contains("emptyword"));
-//        assertThat(!solver1.dictionary.contains("tost"));
+//        assertThat(solver1.dictionary.contains("WORDONE"));
+//        assertThat(solver1.dictionary.contains("WORDTWO"));
+//        assertThat(solver1.dictionary.contains("TEST"));
+//        assertThat(solver1.dictionary.contains("EMPTYWORD"));
+//        assertThat(!solver1.dictionary.contains("TOST"));
 //        assertThat(solver1.dictionary.size() == 4);
 //
 //        BoggleSolver solver2 = new BoggleSolver(new String[0]);
@@ -50,25 +54,27 @@ class BoggleSolverTest {
         Set<String> allValidWords = (Set<String>) solver.getAllValidWords(new BoggleBoard(boardFileName));
 //        allValidWords.forEach(System.out::println);
         assertThat(allValidWords.containsAll(List.of("EQUATION", "QUESTION", "QUESTIONS", "TRIES")));
+        assertThat(!allValidWords.contains(Set.of("TRIE")));
         int valueOfAllValidWords = allValidWords.stream().mapToInt(solver::scoreOf).sum();
         assertThat(valueOfAllValidWords == 84);
     }
 
     private void testScoreOf() {
         BoggleSolver solver = new BoggleSolver(
-                new String[]{"", "t", "bs", "ham", "tost", "tost1", "1tost1", "7letter", "8letters", "more-than-8-letters"});
+                new String[]{"", "T", "BS", "HAM", "TOST", "TOSTT", "TTOSTT", "LETTERS", "LETTERSS", "MORELETTERS"});
         assertThat(solver.scoreOf("") == 0);
-        assertThat(solver.scoreOf("t") == 0);
-        assertThat(solver.scoreOf("bs") == 0);
-        assertThat(solver.scoreOf("ham") == 1);
-        assertThat(solver.scoreOf("tost") == 1);
-        assertThat(solver.scoreOf("tost1") == 2);
-        assertThat(solver.scoreOf("1tost1") == 3);
-        assertThat(solver.scoreOf("7letter") == 5);
-        assertThat(solver.scoreOf("8letters") == 11);
-        assertThat(solver.scoreOf("more-than-8-letters") == 11);
+        assertThat(solver.scoreOf("T") == 0);
+        assertThat(solver.scoreOf("BS") == 0);
+        assertThat(solver.scoreOf("HAM") == 1);
+        assertThat(solver.scoreOf("TOS") == 0);
+        assertThat(solver.scoreOf("TOST") == 1);
+        assertThat(solver.scoreOf("TOSTT") == 2);
+        assertThat(solver.scoreOf("TTOSTT") == 3);
+        assertThat(solver.scoreOf("LETTERS") == 5);
+        assertThat(solver.scoreOf("LETTERSS") == 11);
+        assertThat(solver.scoreOf("MORELETTERS") == 11);
 
-        assertThat(solver.scoreOf("wrong-word") == 0);
+        assertThat(solver.scoreOf("WRONGWORD") == 0);
     }
 
     private static void assertThat(boolean assertion) {
