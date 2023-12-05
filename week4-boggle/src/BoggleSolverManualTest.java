@@ -1,6 +1,9 @@
+import edu.princeton.cs.algs4.Bag;
 import edu.princeton.cs.algs4.In;
 
 import java.io.File;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -26,7 +29,7 @@ class BoggleSolverManualTest {
         String[] dictionary = in.readAllStrings();
         BoggleSolver solver = new BoggleSolver(dictionary);
 
-        Set<String> allValidWords = (Set<String>) solver.getAllValidWords(new BoggleBoard(boardFileName));
+        Set<String> allValidWords = getAllValidWords(boardFileName, solver);
 //        allValidWords.forEach(System.out::println);
         assertThat(allValidWords.containsAll(List.of("NTH", "PHT")));
         int valueOfAllValidWords = allValidWords.stream().mapToInt(solver::scoreOf).sum();
@@ -39,11 +42,21 @@ class BoggleSolverManualTest {
         String[] dictionary = in.readAllStrings();
         BoggleSolver solver = new BoggleSolver(dictionary);
 
-        Set<String> allValidWords = (Set<String>) solver.getAllValidWords(new BoggleBoard(boardFileName));
+        Set<String> allValidWords = getAllValidWords(boardFileName, solver);
 //        allValidWords.forEach(System.out::println);
         int valueOfAllValidWords = allValidWords.stream().mapToInt(solver::scoreOf).sum();
 //        System.out.println(valueOfAllValidWords);
         assertThat(valueOfAllValidWords == score);
+    }
+
+    private static Set<String> getAllValidWords(String boardFileName, BoggleSolver solver) {
+        Bag<String> allValidWordsBag = (Bag<String>) solver.getAllValidWords(new BoggleBoard(boardFileName));
+        Iterator<String> iterator = allValidWordsBag.iterator();
+        Set<String> allValidWords = new HashSet<>();
+        while (iterator.hasNext()) {
+            allValidWords.add(iterator.next());
+        }
+        return allValidWords;
     }
 
     private static void assertThat(boolean assertion) {

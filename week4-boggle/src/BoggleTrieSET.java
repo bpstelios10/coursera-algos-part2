@@ -2,6 +2,7 @@ public class BoggleTrieSET {
 
     private static final int NUMBER_OF_CAPITAL_LETTERS = 26;
     private static final int CAPITAL_LETTERS_OFFSET = 65;
+    private static final int MINIMUM_WORD_LENGTH = 3;
 
     private Node root;
 
@@ -24,9 +25,8 @@ public class BoggleTrieSET {
     public boolean contains(String key) {
         if (key == null) throw new IllegalArgumentException("argument to contains() is null");
         Node x = get(root, key, 0);
-        if (x == null) return false;
 
-        return x.isString;
+        return x != null && x.isWord();
     }
 
     public Node getRoot() {
@@ -36,9 +36,18 @@ public class BoggleTrieSET {
     public static class Node {
         private final Node[] next = new Node[NUMBER_OF_CAPITAL_LETTERS];
         private boolean isString;
+        private int lastBoardIdWordWasFound;
 
         public boolean isWord() {
             return isString;
+        }
+
+        public void setLastBoardIdWordWasFound(int boardId) {
+            lastBoardIdWordWasFound = boardId;
+        }
+
+        public boolean isWordFound(int currentBoardId) {
+            return lastBoardIdWordWasFound == currentBoardId;
         }
     }
 
@@ -46,7 +55,7 @@ public class BoggleTrieSET {
         if (x == null) x = new Node();
 
         if (d == key.length()) {
-            x.isString = true;
+            if (d >= MINIMUM_WORD_LENGTH) x.isString = true;
         } else {
             int c = key.charAt(d);
             x.next[c - CAPITAL_LETTERS_OFFSET] = add(x.next[c - CAPITAL_LETTERS_OFFSET], key, d + 1);

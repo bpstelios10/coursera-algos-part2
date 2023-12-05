@@ -1,12 +1,9 @@
-import edu.princeton.cs.algs4.Stack;
-
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import edu.princeton.cs.algs4.Bag;
 
 public class BoggleSolver {
 
     private final BoggleTrieSET dictionary = new BoggleTrieSET();
+    private int currentBoardId = 0;
 
     // Initializes the data structure using the given array of strings as the dictionary.
     // (You can assume each word in the dictionary contains only the uppercase letters A through Z.)
@@ -16,11 +13,12 @@ public class BoggleSolver {
 
     // Returns the set of all valid words in the given Boggle board, as an Iterable.
     public Iterable<String> getAllValidWords(BoggleBoard board) {
-        Set<String> validWords = new HashSet<>();
+        Bag<String> validWords = new Bag<>();
+        currentBoardId++;
 
         for (int x = 0; x < board.rows(); x++) {
             for (int y = 0; y < board.cols(); y++) {
-                populateValidWords(validWords, board, x, y, new Stack<>(), new StringBuilder(), dictionary.getRoot());
+                populateValidWords(validWords, board, x, y, new boolean[board.rows()][board.cols()], new StringBuilder(), dictionary.getRoot());
             }
         }
 
@@ -48,42 +46,42 @@ public class BoggleSolver {
         return 11;
     }
 
-    // this is a dfs like traverse method that uses DimensionalPoint in stack to mark the visited squares (see marked[]
-    // in dfs).
+    // this is a dfs like traverse method using visitedSquares to mark the visited ones.
     // We also keep the current Node each time, since we will only move by 1 letter each time. So this is a nice optimization
-    // which also allows us to check if the current node is null and if it is, then any other letter combination forward
+    // which allows us to check if the current node is null and if it is, then any other letter combination forward
     // won't be a word as well (it is like checking if this specific word is a prefix of any word in dictionary)
-    private void populateValidWords(Set<String> validWords, BoggleBoard board, int x, int y, Stack<DimensionalPoint> visitedSquares,
-                                    StringBuilder currentWord, BoggleTrieSET.Node currentNode) {
+    // Keeping this node also allows us to set/check if a word is already added, instead of using a set and contains
+    // which are both slower and check if it is actually a word, instead again of using get, from root, in dictionary
+    private void populateValidWords(Bag<String> validWords, BoggleBoard board, int x, int y, boolean[][] visitedSquares,
+                                    StringBuilder currentWord, BoggleTrieSET.Node previousNode) {
         if (x < 0 || y < 0 || x >= board.rows() || y >= board.cols()) return;
 
-        DimensionalPoint currentSquare = new DimensionalPoint(x, y);
-        if (squareIsVisited(visitedSquares, currentSquare)) return;
-        visitedSquares.push(currentSquare);
+        if (visitedSquares[x][y]) return;
+        visitedSquares[x][y] = true;
 
         final char currentChar = board.getLetter(x, y);
         currentWord.append(currentChar);
-        BoggleTrieSET.Node nextNode = dictionary.getNextChar(currentNode, currentChar);
+        BoggleTrieSET.Node nextNode = dictionary.getNextChar(previousNode, currentChar);
         if (nextNode == null) {
-            goBackOneSquare(visitedSquares, currentWord);
+            goBackOneSquare(visitedSquares, x, y, currentWord);
             return;
         }
 
         if (currentChar == 'Q') {
-            currentWord.append('U');
             nextNode = dictionary.getNextChar(nextNode, 'U');
             if (nextNode == null) {
-                goBackOneSquare(visitedSquares, currentWord);
+                goBackOneSquare(visitedSquares, x, y, currentWord);
                 return;
             }
+            currentWord.append('U');
         }
         String currentWordString = currentWord.toString();
 
-        if (!(currentWord.length() < 3)) {
-//            StdOut.println(currentWordString);
-            if (!validWords.contains(currentWordString) && nextNode.isWord()) {
-                validWords.add(currentWordString);
-            }
+//        StdOut.println(currentWordString);
+        if (nextNode.isWord() && !nextNode.isWordFound(currentBoardId)) {
+//        StdOut.println(currentWordString);
+            validWords.add(currentWordString);
+            nextNode.setLastBoardIdWordWasFound(currentBoardId);
         }
 
         populateValidWords(validWords, board, x + 1, y, visitedSquares, currentWord, nextNode);
@@ -94,51 +92,13 @@ public class BoggleSolver {
         populateValidWords(validWords, board, x + 1, y - 1, visitedSquares, currentWord, nextNode);
         populateValidWords(validWords, board, x - 1, y + 1, visitedSquares, currentWord, nextNode);
         populateValidWords(validWords, board, x - 1, y - 1, visitedSquares, currentWord, nextNode);
-        goBackOneSquare(visitedSquares, currentWord);
+        goBackOneSquare(visitedSquares, x, y, currentWord);
     }
 
-    private static void goBackOneSquare(Stack<DimensionalPoint> visitedSquares, StringBuilder currentWord) {
-        visitedSquares.pop();
+    private static void goBackOneSquare(boolean[][] visitedSquares, int x, int y, StringBuilder currentWord) {
+        visitedSquares[x][y] = false;
         currentWord.deleteCharAt(currentWord.length() - 1);
         if (currentWord.length() > 0 && currentWord.charAt(currentWord.length() - 1) == 'Q')
             currentWord.deleteCharAt(currentWord.length() - 1);
-    }
-
-    private boolean squareIsVisited(Stack<DimensionalPoint> visitedSquares, DimensionalPoint currentSquare) {
-        for (DimensionalPoint d : visitedSquares) {
-            if (d.equals(currentSquare)) return true;
-        }
-
-        return false;
-    }
-
-    private static class DimensionalPoint {
-        private final int x;
-        private final int y;
-
-        DimensionalPoint(int x, int y) {
-            this.x = x;
-            this.y = y;
-        }
-
-        @Override
-        public boolean equals(Object other) {
-            if (other == null) return false;
-            if (this == other) return true;
-            if (!(other.getClass() == this.getClass())) return false;
-            DimensionalPoint that = (DimensionalPoint) other;
-
-            return x == that.x && y == that.y;
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(x, y);
-        }
-
-        @Override
-        public String toString() {
-            return "x: " + x + ", y: " + y;
-        }
     }
 }
