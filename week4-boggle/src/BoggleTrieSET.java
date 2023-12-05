@@ -11,6 +11,37 @@ public class BoggleTrieSET {
         root = add(root, key, 0);
     }
 
+    public Node get(String key) {
+        return get(root, key, 0);
+    }
+
+    public Node getNextChar(Node x, char c) {
+        if (x == null) return null;
+
+        return x.next[c - CAPITAL_LETTERS_OFFSET];
+    }
+
+    public boolean contains(String key) {
+        if (key == null) throw new IllegalArgumentException("argument to contains() is null");
+        Node x = get(root, key, 0);
+        if (x == null) return false;
+
+        return x.isString;
+    }
+
+    public Node getRoot() {
+        return root;
+    }
+
+    public static class Node {
+        private final Node[] next = new Node[NUMBER_OF_CAPITAL_LETTERS];
+        private boolean isString;
+
+        public boolean isWord() {
+            return isString;
+        }
+    }
+
     private Node add(Node x, String key, int d) {
         if (x == null) x = new Node();
 
@@ -24,34 +55,11 @@ public class BoggleTrieSET {
         return x;
     }
 
-    public Node get(String key) {
-        return get(root, key, 0);
-    }
-
     private Node get(Node x, String key, int d) {
         if (x == null) return null;
         if (d == key.length()) return x;
         int c = key.charAt(d);
 
         return get(x.next[c - CAPITAL_LETTERS_OFFSET], key, d + 1);
-    }
-
-    public boolean contains(String key) {
-        if (key == null) throw new IllegalArgumentException("argument to contains() is null");
-        Node x = get(root, key, 0);
-        if (x == null) return false;
-
-        return x.isString;
-    }
-
-    public boolean isThereKeyWithPrefix(String prefix) {
-        Node x = get(root, prefix, 0);
-
-        return x != null;
-    }
-
-    private static class Node {
-        private final Node[] next = new Node[NUMBER_OF_CAPITAL_LETTERS];
-        private boolean isString;
     }
 }
