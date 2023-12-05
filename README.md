@@ -39,7 +39,11 @@ To run tests of week4 assignment, from commandline, you need to go to week4-bogg
 ```shell
 java -classpath :../../.lift/algs4.jar BoggleSolverTest ..
 java -classpath :../../.lift/algs4.jar BoggleSolverManualTest ..
+# and for a game of boggle in GUI with 5 rows and 6 cols (if no numbers specified, a 4x4 board is created)
+java -classpath :../../.lift/algs4.jar BoggleGame ".." 5 6
 ```
 and from intellij run (make sure that working directory is coursera-algos-part2):
 BoggleSolverTest::main with program arguments "week4-boggle"
 BoggleSolverManualTest::main with program arguments "week4-boggle"
+BoggleGame::main with program arguments week4-boggle 5 6
+NOTE: if it fails with error for GraphicsEnvironment, you should use `java` directly from your jdk/bin path

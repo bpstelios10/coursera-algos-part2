@@ -87,6 +87,7 @@ public class BoggleGame extends JFrame {
     // used to force the JTextfield and the JList to be the same length 
     private static final int DEF_COLUMNS = 10;
     private static final String MAX_WORD_SIZE = "INCONSEQUENTIALLY";
+    private static String workingDir = "";
 
 
     // keeps track of the level
@@ -384,31 +385,31 @@ public class BoggleGame extends JFrame {
         );
 
         // all words in shakespeare
-        In in1 = new In(new File("dictionary-shakespeare.txt"));
+        In in1 = new In(new File(workingDir + "/dictionary-shakespeare.txt"));
         shakespeareDictionary = new SET<String>();
         for (String s : in1.readAllStrings())
             shakespeareDictionary.add(s);
 
         // all words in shakespeare
-        In in2 = new In(new File("dictionary-nursery.txt"));
+        In in2 = new In(new File(workingDir + "/dictionary-nursery.txt"));
         nurseryDictionary = new SET<String>();
         for (String s : in2.readAllStrings())
             nurseryDictionary.add(s);
 
         // about 20K common words
-        In in3 = new In(new File("dictionary-common.txt"));
+        In in3 = new In(new File(workingDir + "/dictionary-common.txt"));
         commonDictionary = new SET<String>();
         for (String s : in3.readAllStrings())
             commonDictionary.add(s);
 
         // all words in Algorithms 4/e
-        In in4 = new In(new File("dictionary-algs4.txt"));
+        In in4 = new In(new File(workingDir + "/dictionary-algs4.txt"));
         algs4Dictionary = new SET<String>();
         for (String s : in4.readAllStrings())
             algs4Dictionary.add(s);
 
         // dictionary
-        In in = new In(new File("dictionary-yawl.txt"));
+        In in = new In(new File(workingDir + "/dictionary-yawl.txt"));
         String[] dictionary = in.readAllStrings();
 
         // create the Boggle solver with the given dictionary
@@ -956,17 +957,19 @@ public class BoggleGame extends JFrame {
      */
     public static void main(final String[] args) {
 
+        workingDir = args[0];
+
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 int rows = 0;
                 int cols = 0;
-                if (args.length == 0) {
+                if (args.length < 2) {
                     rows = 4;
                     cols = 4;
                 }
-                else if (args.length == 1) {
+                else if (args.length == 2) {
                     try {
-                        rows = Integer.parseInt(args[0]);
+                        rows = Integer.parseInt(args[1]);
                         cols = rows;
                     }
                     catch (NumberFormatException e) {
@@ -976,13 +979,14 @@ public class BoggleGame extends JFrame {
                         System.exit(1);
                     }
                 }
-                else if (args.length == 2) {
+                else if (args.length == 3) {
                     try {
-                        rows = Integer.parseInt(args[0]);
-                        cols  = Integer.parseInt(args[1]);
+                        rows = Integer.parseInt(args[1]);
+                        cols  = Integer.parseInt(args[2]);
                     }
                     catch (NumberFormatException e) {
                         System.err.println("Usage: java BoggleGame " +
+                                           "\nor:    java BoggleGame [workingDir]" +
                                            "\nor:    java BoggleGame [rows]" +
                                            "\nor:    java BoggleGame [rows] [cols]");
                         System.exit(1);
@@ -997,7 +1001,7 @@ public class BoggleGame extends JFrame {
 
                 if (rows <= 0 || cols <= 0) {
                     throw new IllegalArgumentException("Rows and columns must be positive" +
-                                                                 "\nUsage: java BoggleGame " +
+                                                                 "\nUsage: java BoggleGame [working dir (or \"\" if none)]" +
                                                                  "\nor:    java BoggleGame [rows]" +
                                                                  "\nor:    java BoggleGame [rows] [cols]");
                 }
