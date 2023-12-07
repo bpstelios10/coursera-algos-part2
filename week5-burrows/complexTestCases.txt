@@ -1,0 +1,7 @@
+abcdefghijklmnopqrstuvwxyz 0123456789
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+!@#$%^&*()_+-=`~[]{}\|'";:/?.>,<
+rrrrepeated chaaaaracteeers and    spaces and
+
+
+new lines
